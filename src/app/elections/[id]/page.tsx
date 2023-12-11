@@ -1,7 +1,8 @@
 'use client'
 
-import { ElectionCard } from '@/components/molecules/ElectionCard'
-import { dateFormatter } from '@/utils/functions'
+import { CandidatesOverview } from '@/components/organisms/CandidatesOverview'
+import { ElectionHero } from '@/components/organisms/ElectionHero'
+import { VotersList } from '@/components/organisms/VotersList'
 import logo from '@/utils/images'
 import { NEAR_SMART_CONTRACT, onConnectNearWallet } from '@/utils/near'
 import { Contract } from 'near-api-js'
@@ -29,7 +30,7 @@ interface MyContract extends Contract {
   get_all_elections: () => Promise<any>
 }
 
-export default function Home() {
+export default function ElectionPage() {
   const [elections, setElections] = useState<ElectionsProps[]>([])
 
   async function onGetAllElections() {
@@ -45,9 +46,9 @@ export default function Home() {
     setElections(elections)
   }
 
-  useEffect(() => {
-    onGetAllElections()
-  }, [])
+  // useEffect(() => {
+  //   onGetAllElections()
+  // }, [])
 
   return (
     <div className="min-h-screen w-full">
@@ -59,33 +60,10 @@ export default function Home() {
             </Link>
           </nav>
         </header>
-        <main className="w-full">
-          <h1 className="font-clash text-[3rem] font-semibold text-white">
-            Elections
-          </h1>
-          <ul className="flex w-full flex-wrap items-center gap-8">
-            {elections.map(
-              ({
-                1: { candidates, endsAt, id, name, startsAt, totalVotes },
-              }) => {
-                const formattedStartsAt = dateFormatter(startsAt)
-                const formattedEndsAt = dateFormatter(endsAt)
-
-                return (
-                  <li key={id} className="w-full max-w-lg">
-                    <ElectionCard
-                      id={id}
-                      candidates={candidates.length}
-                      name={name}
-                      endsAt={formattedEndsAt}
-                      startsAt={formattedStartsAt}
-                      totalVotes={totalVotes}
-                    />
-                  </li>
-                )
-              },
-            )}
-          </ul>
+        <main className="flex w-full flex-col gap-8">
+          <ElectionHero />
+          <CandidatesOverview />
+          <VotersList />
         </main>
       </div>
     </div>
