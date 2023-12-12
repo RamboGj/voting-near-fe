@@ -1,6 +1,6 @@
 import { NEAR_TIMESTAMP_CONVERTER_FACTOR } from './constants'
 
-export function dateFormatter(date: bigint): string {
+export function dateFormatter(date: string): string {
   const formattedDate = new Date(
     Number(date) / NEAR_TIMESTAMP_CONVERTER_FACTOR,
   ).toLocaleDateString('en-US', {

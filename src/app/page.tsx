@@ -16,10 +16,10 @@ interface ElectionsProps {
       accountId: string
       totalVotes: number
     }[]
-    endsAt: bigint
+    endsAt: string
     id: number
     name: string
-    startsAt: bigint
+    startsAt: string
     totalVotes: number
     voters: string[]
   }
@@ -51,7 +51,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen w-full">
-      <div className="mx-auto flex w-full max-w-[1120px] flex-col items-center">
+      <div className="mx-auto flex w-full max-w-[1120px] flex-col items-center pb-24">
         <header className="mx-auto py-8">
           <nav>
             <Link href="/">

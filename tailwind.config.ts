@@ -19,6 +19,7 @@ const config: Config = {
         success500: '#1BD143',
 
         gray500: '#757575',
+        gray300: '#EDEDED',
       },
 
       boxShadow: {

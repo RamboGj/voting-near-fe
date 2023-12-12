@@ -1,5 +1,6 @@
 'use client'
 
+import { ElectionsProps, VoterProps } from '@/@types/types'
 import { CandidatesOverview } from '@/components/organisms/CandidatesOverview'
 import { ElectionHero } from '@/components/organisms/ElectionHero'
 import { VotersList } from '@/components/organisms/VotersList'
@@ -10,45 +11,39 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-interface ElectionsProps {
-  0: string
-  1: {
-    candidates: {
-      accountId: string
-      totalVotes: number
-    }[]
-    endsAt: bigint
-    id: number
-    name: string
-    startsAt: bigint
-    totalVotes: number
-    voters: string[]
-  }
-}
-
 interface MyContract extends Contract {
-  get_all_elections: () => Promise<any>
+  get_election: ({ electionId }: { electionId: number }) => Promise<any>
+  get_voters_by_election: ({
+    electionId,
+  }: {
+    electionId: number
+  }) => Promise<any>
 }
 
-export default function ElectionPage() {
-  const [elections, setElections] = useState<ElectionsProps[]>([])
+export default function ElectionPage({ params }: { params: { id: number } }) {
+  const [election, setElection] = useState<ElectionsProps>()
+  const [voters, setVoters] = useState<VoterProps[]>([])
 
-  async function onGetAllElections() {
+  async function onGetElectionData() {
     const wallet = await onConnectNearWallet()
 
     const contract = new Contract(wallet.account(), NEAR_SMART_CONTRACT, {
-      viewMethods: ['get_all_elections'],
+      viewMethods: ['get_election', 'get_voters_by_election'],
       changeMethods: [],
     }) as MyContract
 
-    const elections = await contract.get_all_elections()
-
-    setElections(elections)
+    const [election, voters] = await Promise.all([
+      contract.get_election({ electionId: params.id }),
+      contract.get_voters_by_election({ electionId: params.id }),
+    ])
+    console.log('voters', voters)
+    setElection(election)
+    setVoters(voters)
   }
 
-  // useEffect(() => {
-  //   onGetAllElections()
-  // }, [])
+  useEffect(() => {
+    onGetElectionData()
+  }, [])
 
   return (
     <div className="min-h-screen w-full">
@@ -60,11 +55,27 @@ export default function ElectionPage() {
             </Link>
           </nav>
         </header>
-        <main className="flex w-full flex-col gap-8">
-          <ElectionHero />
-          <CandidatesOverview />
-          <VotersList />
-        </main>
+        {election ? (
+          <main className="flex w-full flex-col gap-8">
+            <ElectionHero
+              candidates={election?.candidates}
+              endsAt={election?.endsAt}
+              startsAt={election?.startsAt}
+              id={election?.id}
+              name={election?.name}
+              totalVotes={election?.totalVotes}
+            />
+            <CandidatesOverview
+              candidates={election.candidates}
+              electionTotalVotes={election.totalVotes}
+            />
+            <VotersList voters={voters} />
+          </main>
+        ) : (
+          <h1 className="animate-pulse font-clash text-[3rem] font-semibold text-white">
+            Loading...
+          </h1>
+        )}
       </div>
     </div>
   )

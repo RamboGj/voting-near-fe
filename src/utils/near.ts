@@ -24,15 +24,13 @@ export async function onConnectNearWallet() {
 
 export async function onSignin() {
   const wallet = await onConnectNearWallet()
-  const isSignedIn = wallet.isSignedIn()
 
-  if (isSignedIn) {
-    return wallet
-  } else {
-    await wallet?.requestSignIn({
-      contractId: NEAR_SMART_CONTRACT,
-    })
-  }
+  const account = await wallet?.requestSignIn({
+    contractId: NEAR_SMART_CONTRACT,
+  })
+
+  console.log('account', account)
+  console.log('wallet', wallet)
 }
 
 export async function onSignout() {
