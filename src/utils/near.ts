@@ -1,5 +1,7 @@
 import * as nearAPI from 'near-api-js'
 
+import { Contract } from 'near-api-js'
+
 const { keyStores, connect, WalletConnection } = nearAPI
 
 const myKeysStore = new keyStores.BrowserLocalStorageKeyStore()
@@ -36,4 +38,21 @@ export async function onSignin() {
 export async function onSignout() {
   const wallet = await onConnectNearWallet()
   wallet?.signOut()
+}
+
+interface MyContract extends Contract {
+  get_all_elections: () => Promise<any>
+}
+
+export async function onGetAllElections() {
+  const wallet = await onConnectNearWallet()
+
+  const contract = new Contract(wallet.account(), NEAR_SMART_CONTRACT, {
+    viewMethods: ['get_all_elections'],
+    changeMethods: [],
+  }) as MyContract
+
+  const elections = await contract.get_all_elections()
+
+  return elections
 }

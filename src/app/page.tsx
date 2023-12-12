@@ -3,11 +3,11 @@
 import { ElectionCard } from '@/components/molecules/ElectionCard'
 import { dateFormatter } from '@/utils/functions'
 import logo from '@/utils/images'
-import { NEAR_SMART_CONTRACT, onConnectNearWallet } from '@/utils/near'
-import { Contract } from 'near-api-js'
+import { onGetAllElections } from '@/utils/near'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 
 interface ElectionsProps {
   0: string
@@ -25,28 +25,19 @@ interface ElectionsProps {
   }
 }
 
-interface MyContract extends Contract {
-  get_all_elections: () => Promise<any>
-}
-
 export default function Home() {
   const [elections, setElections] = useState<ElectionsProps[]>([])
 
-  async function onGetAllElections() {
-    const wallet = await onConnectNearWallet()
-
-    const contract = new Contract(wallet.account(), NEAR_SMART_CONTRACT, {
-      viewMethods: ['get_all_elections'],
-      changeMethods: [],
-    }) as MyContract
-
-    const elections = await contract.get_all_elections()
-
-    setElections(elections)
-  }
-
   useEffect(() => {
-    onGetAllElections()
+    if (typeof window !== 'undefined') {
+      const fetchElections = async () => {
+        const { onGetAllElections } = await import('@/utils/near')
+        const electionsData = await onGetAllElections()
+        setElections(electionsData)
+      }
+
+      fetchElections()
+    }
   }, [])
 
   return (
