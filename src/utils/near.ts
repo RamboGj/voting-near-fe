@@ -17,6 +17,12 @@ const connectionConfig = {
 
 export const NEAR_SMART_CONTRACT = 'voting_test.rambogj.testnet'
 
+export const nearConnection = async () => {
+  const connection = await connect(connectionConfig)
+
+  return connection
+}
+
 export async function onConnectNearWallet() {
   const connection = await connect(connectionConfig)
   const walletConnection = new WalletConnection(connection, '')
@@ -27,12 +33,9 @@ export async function onConnectNearWallet() {
 export async function onSignin() {
   const wallet = await onConnectNearWallet()
 
-  const account = await wallet?.requestSignIn({
+  await wallet?.requestSignIn({
     contractId: NEAR_SMART_CONTRACT,
   })
-
-  console.log('account', account)
-  console.log('wallet', wallet)
 }
 
 export async function onSignout() {

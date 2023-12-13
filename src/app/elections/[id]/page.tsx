@@ -36,7 +36,6 @@ export default function ElectionPage({ params }: { params: { id: number } }) {
       contract.get_election({ electionId: params.id }),
       contract.get_voters_by_election({ electionId: params.id }),
     ])
-    console.log('voters', voters)
     setElection(election)
     setVoters(voters)
   }
@@ -68,6 +67,8 @@ export default function ElectionPage({ params }: { params: { id: number } }) {
             <CandidatesOverview
               candidates={election.candidates}
               electionTotalVotes={election.totalVotes}
+              electionId={election.id}
+              endsAt={election.endsAt}
             />
             <VotersList voters={voters} />
           </main>

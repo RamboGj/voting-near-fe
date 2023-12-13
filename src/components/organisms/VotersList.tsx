@@ -32,9 +32,9 @@ export function VotersList({ voters }: VotersListProps) {
           })}
         </ul>
       </div>
-      <button className="mt-12 h-[42px] w-48 rounded-[12px] bg-gradient-to-r from-blue600 to-blue500 px-8 font-clash text-lg font-semibold text-white transition duration-500 hover:shadow-gradient-hover-shadow">
+      {/* <button className="mt-12 h-[42px] w-48 rounded-[12px] bg-gradient-to-r from-blue600 to-blue500 px-8 font-clash text-lg font-semibold text-white transition duration-500 hover:shadow-gradient-hover-shadow">
         Load More
-      </button>
+      </button> */}
     </div>
   )
 }

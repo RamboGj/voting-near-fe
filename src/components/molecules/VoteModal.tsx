@@ -6,7 +6,7 @@ import {
 } from '@/utils/near'
 import * as Dialog from '@radix-ui/react-dialog'
 import { Contract } from 'near-api-js'
-import { User } from 'phosphor-react'
+import { User, X } from 'phosphor-react'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 
@@ -43,6 +43,8 @@ export function VoteModal({ candidates, electionId }: VoteModalProps) {
           electionId,
           candidateId: selectedCandidate?.accountId || '',
         })
+
+        window.location.reload()
       } catch (err) {
         console.log('err =>', err)
       }
@@ -52,16 +54,25 @@ export function VoteModal({ candidates, electionId }: VoteModalProps) {
   }
 
   const noneSelected = selectedCandidate === null
+  const noCandidateAdded = candidates.length === 0
 
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 z-30 bg-black/80" />
       <Dialog.Content className="fixed left-1/2 top-1/2 z-50 h-[380px] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[24px] bg-white p-9">
         <div className="flex h-full flex-col">
-          <h2 className="mb-1 font-clash text-[2rem] font-semibold leading-none text-black">
-            Vote
-          </h2>
-
+          <div className="flex w-full items-center justify-between">
+            <div className="invisible" />
+            <h2 className="mb-1 font-clash text-[2rem] font-semibold leading-none text-black">
+              Vote
+            </h2>
+            <Dialog.Trigger>
+              <X
+                className="text-black transition-colors duration-300 hover:text-black/70"
+                size={30}
+              />
+            </Dialog.Trigger>
+          </div>
           <ul className="mt-4 flex w-full flex-col gap-3">
             {candidates.map((candidate) => {
               const isSelected =
@@ -97,9 +108,9 @@ export function VoteModal({ candidates, electionId }: VoteModalProps) {
           </ul>
 
           <button
-            disabled={noneSelected}
+            disabled={noneSelected || noCandidateAdded}
             onClick={onVote}
-            className="mt-auto h-[42px] w-full rounded-[12px] bg-gradient-to-r from-blue600 to-blue500 px-8 font-clash text-lg font-semibold text-white transition duration-500 hover:shadow-gradient-hover-shadow"
+            className="mt-auto h-[42px] w-full rounded-[12px] px-8 font-clash text-lg font-semibold text-white transition duration-500 enabled:bg-gradient-to-r enabled:from-blue600 enabled:to-blue500 enabled:hover:shadow-gradient-hover-shadow disabled:bg-gray500"
           >
             Vote
           </button>
