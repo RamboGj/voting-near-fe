@@ -1,11 +1,5 @@
 import { CandidateProps } from '@/@types/types'
-import {
-  NEAR_SMART_CONTRACT,
-  onConnectNearWallet,
-  onSignin,
-} from '@/utils/near'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Contract } from 'near-api-js'
 import { User, X } from 'phosphor-react'
 import { useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -15,42 +9,14 @@ interface VoteModalProps {
   electionId: number
 }
 
-interface MyContract extends Contract {
-  vote: ({
-    electionId,
-    candidateId,
-  }: {
-    electionId: number
-    candidateId: string
-  }) => Promise<any>
-}
-
 export function VoteModal({ candidates, electionId }: VoteModalProps) {
   const [selectedCandidate, setSelectedCandidate] =
     useState<CandidateProps | null>(null)
 
-  async function onVote() {
-    const wallet = await onConnectNearWallet()
+  const handleVote = async () => {
+    const { onVote } = await import('@/utils/near')
 
-    if (wallet.isSignedIn()) {
-      const contract = new Contract(wallet.account(), NEAR_SMART_CONTRACT, {
-        viewMethods: [],
-        changeMethods: ['vote'],
-      }) as MyContract
-
-      try {
-        await contract.vote({
-          electionId,
-          candidateId: selectedCandidate?.accountId || '',
-        })
-
-        window.location.reload()
-      } catch (err) {
-        console.log('err =>', err)
-      }
-    } else {
-      onSignin()
-    }
+    await onVote(electionId, selectedCandidate?.accountId || '')
   }
 
   const noneSelected = selectedCandidate === null
@@ -109,7 +75,7 @@ export function VoteModal({ candidates, electionId }: VoteModalProps) {
 
           <button
             disabled={noneSelected || noCandidateAdded}
-            onClick={onVote}
+            onClick={handleVote}
             className="mt-auto h-[42px] w-full rounded-[12px] px-8 font-clash text-lg font-semibold text-white transition duration-500 enabled:bg-gradient-to-r enabled:from-blue600 enabled:to-blue500 enabled:hover:shadow-gradient-hover-shadow disabled:bg-gray500"
           >
             Vote

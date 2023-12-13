@@ -1,52 +1,24 @@
-import {
-  NEAR_SMART_CONTRACT,
-  nearConnection,
-  onConnectNearWallet,
-  onSignin,
-} from '@/utils/near'
 import * as Dialog from '@radix-ui/react-dialog'
-import { Contract } from 'near-api-js'
 import { X } from 'phosphor-react'
 import { useState } from 'react'
-import * as nearAPI from 'near-api-js'
 
 interface VoteModalProps {
   electionId: number
 }
 
-interface MyContract extends Contract {
-  add_candidate_to_election: ({
-    accountId,
-    electionId,
-  }: {
-    accountId: string
-    electionId: number
-  }) => Promise<any>
-}
-
 export function AddCandidateModal({ electionId }: VoteModalProps) {
+  const [isAdding, setIsAdding] = useState<boolean>(false)
   const [candidateAccountId, setCandidateAccountId] = useState<string>('')
 
-  async function onAddCandidate() {
-    const wallet = await onConnectNearWallet()
+  const addCandidate = async () => {
+    setIsAdding(true)
+    const { onAddCandidate } = await import('@/utils/near')
 
-    if (wallet.isSignedIn()) {
-      const contract = new Contract(wallet.account(), NEAR_SMART_CONTRACT, {
-        viewMethods: [],
-        changeMethods: ['add_candidate_to_election'],
-      }) as MyContract
-
-      try {
-        await contract.add_candidate_to_election({
-          electionId,
-          accountId: candidateAccountId,
-        })
-        window.location.reload()
-      } catch (err) {
-        console.log('err =>', err)
-      }
-    } else {
-      onSignin()
+    try {
+      await onAddCandidate(electionId, candidateAccountId)
+    } catch (err) {
+      console.log('ERR', err)
+      setIsAdding(false)
     }
   }
 
@@ -92,8 +64,8 @@ export function AddCandidateModal({ electionId }: VoteModalProps) {
           </div>
 
           <button
-            disabled={notAValidAccountId}
-            onClick={onAddCandidate}
+            disabled={notAValidAccountId || isAdding}
+            onClick={addCandidate}
             className="mt-auto h-[42px] w-full rounded-[12px] px-8 font-clash text-lg font-semibold text-white transition duration-500 enabled:bg-gradient-to-r enabled:from-blue600 enabled:to-blue500 enabled:hover:shadow-gradient-hover-shadow disabled:bg-gray500"
           >
             Add

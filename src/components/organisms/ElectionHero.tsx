@@ -23,9 +23,6 @@ export function ElectionHero({
   startsAt,
   totalVotes,
 }: ElectionHeroProps) {
-  console.log('ID =>', id)
-  console.log('startsAt =>', Number(startsAt) / NEAR_TIMESTAMP_CONVERTER_FACTOR)
-
   const formattedEndAt = dateFormatter(endsAt)
   const formattedStartsAt = dateFormatter(startsAt)
 
@@ -41,14 +38,14 @@ export function ElectionHero({
             <h2 className="font-clash text-[2rem] font-semibold leading-none text-black">
               {name}
             </h2>
-            <Link
+            {/* <Link
               target="_blank"
               href={`https://testnet.nearblocks.io/address/${NEAR_SMART_CONTRACT}`}
             >
               <span className="text-sm text-gray500 transition-colors duration-300 hover:text-gray-600">
                 View in block explorer
               </span>
-            </Link>
+            </Link> */}
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-full bg-warning500"></div>

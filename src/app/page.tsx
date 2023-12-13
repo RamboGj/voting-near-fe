@@ -3,11 +3,11 @@
 import { ElectionCard } from '@/components/molecules/ElectionCard'
 import { dateFormatter } from '@/utils/functions'
 import logo from '@/utils/images'
-import { onGetAllElections } from '@/utils/near'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
+import * as Dialog from '@radix-ui/react-dialog'
+import { CreateElectionModal } from '@/components/molecules/CreateElectionModal'
 
 interface ElectionsProps {
   0: string
@@ -29,15 +29,13 @@ export default function Home() {
   const [elections, setElections] = useState<ElectionsProps[]>([])
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const fetchElections = async () => {
-        const { onGetAllElections } = await import('@/utils/near')
-        const electionsData = await onGetAllElections()
-        setElections(electionsData)
-      }
-
-      fetchElections()
+    const fetchElections = async () => {
+      const { onGetAllElections } = await import('@/utils/near')
+      const electionsData = await onGetAllElections()
+      setElections(electionsData)
     }
+
+    fetchElections()
   }, [])
 
   return (
@@ -51,10 +49,20 @@ export default function Home() {
           </nav>
         </header>
         <main className="w-full">
-          <h1 className="font-clash text-[3rem] font-semibold text-white">
-            Elections
-          </h1>
-          <ul className="flex w-full flex-wrap items-center gap-8">
+          <div className="max-w-sm">
+            <h1 className="font-clash text-[3rem] font-semibold text-white">
+              Elections
+            </h1>
+            <Dialog.Root>
+              <Dialog.Trigger>
+                <button className="mt-auto h-[42px] w-full rounded-[12px] px-8 font-clash text-lg font-semibold text-white transition duration-500 enabled:bg-gradient-to-r enabled:from-blue600 enabled:to-blue500 enabled:hover:shadow-gradient-hover-shadow disabled:bg-gray500">
+                  Create Election
+                </button>
+              </Dialog.Trigger>
+              <CreateElectionModal />
+            </Dialog.Root>
+          </div>
+          <ul className="mt-12 flex w-full flex-wrap items-center gap-8">
             {elections.map(
               ({
                 1: { candidates, endsAt, id, name, startsAt, totalVotes },
